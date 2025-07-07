@@ -72,16 +72,16 @@ int main(void){
     unsigned int buffer2ID = 0;
     unsigned int buffer3ID = 0;
     
-    glGenBuffers(1, &bufferID); //suzdavame bufer v GPU
-    glBindBuffer(GL_ARRAY_BUFFER, bufferID);    //definirame tipa na bufera
+    glGenBuffers(1, &bufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
     glBufferData(GL_ARRAY_BUFFER, sizeof(postitionData), postitionData, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &buffer2ID); //suzdavame bufer v GPU; kolko bufera, promenliva za da se populni id-to
-    glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);    //definirame tipa na bufera
+    glGenBuffers(1, &buffer2ID);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer2ID); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(normalData), normalData, GL_STATIC_DRAW);
     
-    glGenBuffers(1, &buffer3ID); //suzdavame bufer v GPU
-    glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);    //definirame tipa na bufera
+    glGenBuffers(1, &buffer3ID); 
+    glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
     glBufferData(GL_ARRAY_BUFFER, sizeof(textData), textData, GL_STATIC_DRAW);
 
     const int POSITION_INDEX = 0;
