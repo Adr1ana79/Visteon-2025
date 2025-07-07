@@ -1,0 +1,6 @@
+[submodule "hello-world/third-party/glew"]
+	path = hello-world/third-party/glew
+	url = https://github.com/nigels-com/glew
+[submodule "hello-world/third-party/tinyGLTF"]
+	path = hello-world/third-party/tinyGLTF
+	url = https://github.com/syoyo/tinygltf.git

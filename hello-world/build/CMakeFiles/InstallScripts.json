@@ -1,0 +1,10 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/Trainee/Visteon-2025/hello-world/build/cmake_install.cmake",
+		"C:/Users/Trainee/Visteon-2025/hello-world/build/third-party/glfw/cmake_install.cmake",
+		"C:/Users/Trainee/Visteon-2025/hello-world/build/third-party/glfw/src/cmake_install.cmake",
+		"C:/Users/Trainee/Visteon-2025/hello-world/build/third-party/glfw/docs/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

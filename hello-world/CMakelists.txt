@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(HelloWorld)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_executable(hello_world src/main.cpp)
+
+add_subdirectory(third-party/glfw)
+
+target_link_libraries(hello_world PRIVATE glfw)
+
+target_include_directories(hello_world PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third-party/tinyGLTF
+)
+
+target_compile_definitions(hello_world PRIVATE
+    -DTINYGLTF_IMPLEMENTATION
+    -DSTB_IMAGE_IMPLEMENTATION
+    -DSTB_IMAGE_WRITE_IMPLEMENTATION
+)
+
+if(WIN32)
+    target_link_libraries(hello_world PRIVATE
+        ${CMAKE_SOURCE_DIR}/third-party/pvr/Library/Windows_x86_64/libEGL.lib
+        ${CMAKE_SOURCE_DIR}/third-party/pvr/Library/Windows_x86_64/libGLESv2.lib
+    )
+elseif(UNIX)
+    target_link_libraries(hello_world PRIVATE GLESv2)
+endif()
+
+target_include_directories(hello_world PRIVATE
+    third-party/glfw/include
+)
+
+if(WIN32)
+    target_include_directories(hello_world PRIVATE
+        third-party/pvr/include
+    )
+elseif(UNIX)
+endif()
+
