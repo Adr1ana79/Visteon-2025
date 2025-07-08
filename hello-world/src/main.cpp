@@ -232,7 +232,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
             fragColor = vec4(0.0, 1.0, 0.7, 1.0);
         }
     )";*/
-    std::cout << "Test1\n";
     std::filesystem::path vertexShaderPath;
     std::filesystem::path fragmentShaderPath;
     std::string vertexShaderSource;
@@ -240,16 +239,13 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
 
     auto gltfMaterialExstras = model.materials[materialId].extras;
     if(gltfMaterialExstras.Has("shader")){
-        std::cout << "Test2\n";
         auto gltfMaterialShader = gltfMaterialExstras.Get("shader");
 
         if(gltfMaterialShader.Has("vertex")){
-            std::cout << "Test3\n";
             std::string gltfMaterialShaderVertex = gltfMaterialShader.Get("vertex").Get<std::string>();
             vertexShaderPath = gltfDirectory / gltfMaterialShaderVertex;
         }
         if(gltfMaterialShader.Has("fragment")){
-            std::cout << "Test4\n";
             std::string gltfMaterialShaderFragment = gltfMaterialShader.Get("fragment").Get<std::string>();
             fragmentShaderPath = gltfDirectory / gltfMaterialShaderFragment;
         }
@@ -257,7 +253,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
 
     std::ifstream vertexShaderFile(vertexShaderPath);
     if(vertexShaderFile.is_open()){
-        std::cout << "Test5\n";
         std::stringstream buffer;
         buffer << vertexShaderFile.rdbuf();
         vertexShaderSource = buffer.str();
@@ -265,7 +260,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
 
     std::ifstream fragmentShaderFile(fragmentShaderPath);
     if(fragmentShaderFile.is_open()){
-        std::cout << "Test6\n";
         std::stringstream buffer;
         buffer << fragmentShaderFile.rdbuf();
         fragmentShaderSource = buffer.str();
@@ -273,8 +267,7 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
 
     const char* vertexShaderSourceCStr = vertexShaderSource.c_str();
     const char* fragmentShaderSourceCStr = fragmentShaderSource.c_str();
-    std::cout << vertexShaderSource <<"\n";
-    std::cout << fragmentShaderSource <<"\n";
+
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSourceCStr, nullptr);
 
@@ -286,7 +279,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
     char buffer[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
     if(status == GL_FALSE){
-        std::cout << "Test5\n";
         GLint length;
         glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &length);
         glGetShaderInfoLog(vertexShader, length, &length, buffer);
@@ -295,7 +287,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
 
     glCompileShader(fragmentShader);
     if(status == GL_FALSE){
-        std::cout << "Test5\n";
         GLint length;
         glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &length);
         glGetShaderInfoLog(fragmentShader, length, &length, buffer);
@@ -309,7 +300,6 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
     glLinkProgram(windowContext.gl.program);
     glGetProgramiv(windowContext.gl.program, GL_LINK_STATUS, &status);
     if(status == GL_FALSE){
-        std::cout << "Test5\n";
         GLint length;
         glGetProgramiv(windowContext.gl.program, GL_INFO_LOG_LENGTH, &length);
         glGetProgramInfoLog(windowContext.gl.program, length, &length, buffer);
