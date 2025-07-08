@@ -13,9 +13,9 @@ struct WindowContext{
     WindowGLContext gl;
 };
 
-void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId);
+void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId);
 
-void LoadMesh(WindowContext windowContext, tinygltf::Model model, unsigned int meshId);
+void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int meshId);
 
 int main(void){
     WindowContext windowContext;
@@ -51,94 +51,98 @@ int main(void){
         return 1;
     }
 
-    GLfloat postitionData[] = {
-        -0.5f, -0.5f, 0.0f, // positions[0]​
-      0.5f, -0.5f, 0.0f, // positions[1]​
-        0.0f, 0.5f, 0.0f, // positions[2]​
-    };
+    // GLfloat postitionData[] = {
+    //     -0.5f, -0.5f, 0.0f, // positions[0]​
+    //   0.5f, -0.5f, 0.0f, // positions[1]​
+    //     0.0f, 0.5f, 0.0f, // positions[2]​
+    // };
 
-    GLfloat normalData[] = {
-        0.0f, 0.0f, 1.0f, // normals[0]​
-        0.0f, 0.0f, 1.0f, // normals[1]​
-        0.0f, 0.0f, 1.0f, // normals[2]​
-    };
+    // GLfloat normalData[] = {
+    //     0.0f, 0.0f, 1.0f, // normals[0]​
+    //     0.0f, 0.0f, 1.0f, // normals[1]​
+    //     0.0f, 0.0f, 1.0f, // normals[2]​
+    // };
 
-    GLfloat textData[] = {
-        0.25f, 0.25f, // texture coordinates[0]​
-        0.75f, 0.25f, // texture coordinates[1]​
-        0.5f, 0.75f // texture coordinates[2]​
-    };
+    // GLfloat textData[] = {
+    //     0.25f, 0.25f, // texture coordinates[0]​
+    //     0.75f, 0.25f, // texture coordinates[1]​
+    //     0.5f, 0.75f // texture coordinates[2]​
+    // };
 
-    unsigned int bufferID = 0;
-    unsigned int buffer2ID = 0;
-    unsigned int buffer3ID = 0;
+    // unsigned int bufferID = 0;
+    // unsigned int buffer2ID = 0;
+    // unsigned int buffer3ID = 0;
     
-    glGenBuffers(1, &bufferID);
-    glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(postitionData), postitionData, GL_STATIC_DRAW);
+    // glGenBuffers(1, &bufferID);
+    // glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(postitionData), postitionData, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &buffer2ID);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer2ID); 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(normalData), normalData, GL_STATIC_DRAW);
+    // glGenBuffers(1, &buffer2ID);
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID); 
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(normalData), normalData, GL_STATIC_DRAW);
     
-    glGenBuffers(1, &buffer3ID); 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textData), textData, GL_STATIC_DRAW);
+    // glGenBuffers(1, &buffer3ID); 
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(textData), textData, GL_STATIC_DRAW);
 
-    const int POSITION_INDEX = 0;
-    const int NORMAL_INDEX = 1;
-    const int TEXT_INDEX = 2;  
+    // const int POSITION_INDEX = 0;
+    // const int NORMAL_INDEX = 1;
+    // const int TEXT_INDEX = 2;  
     
-    GLuint vertexArrayObject1 = 0;
-    glGenVertexArrays(1, &vertexArrayObject1);
-    glBindVertexArray(vertexArrayObject1);
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, bufferID); 
-    glEnableVertexAttribArray(POSITION_INDEX);
-    glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    
-    glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);
-    glEnableVertexAttribArray(NORMAL_INDEX);
-    glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
-    glEnableVertexAttribArray(TEXT_INDEX);  
-    glVertexAttribPointer(TEXT_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
+    // GLuint vertexArrayObject1 = 0;
+    // glGenVertexArrays(1, &vertexArrayObject1);
+    // glBindVertexArray(vertexArrayObject1);
 
 
-    GLuint vertexArrayObject2 = 0;
-    glGenVertexArrays(1, &vertexArrayObject2);
-    glBindVertexArray(vertexArrayObject2);
+    // glBindBuffer(GL_ARRAY_BUFFER, bufferID); 
+    // glEnableVertexAttribArray(POSITION_INDEX);
+    // glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
+    
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);
+    // glEnableVertexAttribArray(NORMAL_INDEX);
+    // glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
+    // glEnableVertexAttribArray(TEXT_INDEX);  
+    // glVertexAttribPointer(TEXT_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
+
+
+    // GLuint vertexArrayObject2 = 0;
+    // glGenVertexArrays(1, &vertexArrayObject2);
+    // glBindVertexArray(vertexArrayObject2);
 
     
-    glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
-    glEnableVertexAttribArray(TEXT_INDEX);
-    glVertexAttribPointer(TEXT_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
+    // glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
+    // glEnableVertexAttribArray(TEXT_INDEX);
+    // glVertexAttribPointer(TEXT_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
     
-    glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);    
-    glEnableVertexAttribArray(NORMAL_INDEX);
-    glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);    
+    // glEnableVertexAttribArray(NORMAL_INDEX);
+    // glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
     
-    glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);    
-    glEnableVertexAttribArray(POSITION_INDEX);  
-    glVertexAttribPointer(POSITION_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);    
+    // glEnableVertexAttribArray(POSITION_INDEX);  
+    // glVertexAttribPointer(POSITION_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
+    int meshId = 0, materialId = 0;
+    loadMesh(windowContext, model, meshId);
 
     std::filesystem::path gltfPath = gltfFilename;
     std::filesystem::path gltfDirectory = gltfPath.parent_path();
 
-    LoadMaterial(windowContext, model, gltfDirectory, 0);
+    loadMaterial(windowContext, model, gltfDirectory, materialId);
 
     while (!glfwWindowShouldClose(window)){
         glClearColor(0.5F, 0.0F, 0.7F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT);
-
-        glBindVertexArray(vertexArrayObject1);
+        
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        
         glUseProgram(windowContext.gl.program);
+       // glBindVertexArray(windowContext.gl.vertexArrayObject);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glBindVertexArray(vertexArrayObject2);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindVertexArray(vertexArrayObject2);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
 
@@ -149,7 +153,7 @@ int main(void){
     return 0;
 } 
 
-void LoadMesh(WindowContext windowContext, tinygltf::Model model, unsigned int meshId){
+void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int meshId){
     GLuint vertexBuffer = 0;
     GLuint normalBuffer = 0;
     GLuint texCoordBuffer = 0;
@@ -205,11 +209,11 @@ void LoadMesh(WindowContext windowContext, tinygltf::Model model, unsigned int m
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindVertexArray(0);
 }
 
-void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId){
+void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId){
     /*const char* vertexShaderSource = R"(
         #version 300 es
 
@@ -228,7 +232,7 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
             fragColor = vec4(0.0, 1.0, 0.7, 1.0);
         }
     )";*/
-
+    std::cout << "Test1\n";
     std::filesystem::path vertexShaderPath;
     std::filesystem::path fragmentShaderPath;
     std::string vertexShaderSource;
@@ -236,13 +240,16 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
 
     auto gltfMaterialExstras = model.materials[materialId].extras;
     if(gltfMaterialExstras.Has("shader")){
+        std::cout << "Test2\n";
         auto gltfMaterialShader = gltfMaterialExstras.Get("shader");
 
         if(gltfMaterialShader.Has("vertex")){
+            std::cout << "Test3\n";
             std::string gltfMaterialShaderVertex = gltfMaterialShader.Get("vertex").Get<std::string>();
             vertexShaderPath = gltfDirectory / gltfMaterialShaderVertex;
         }
         if(gltfMaterialShader.Has("fragment")){
+            std::cout << "Test4\n";
             std::string gltfMaterialShaderFragment = gltfMaterialShader.Get("fragment").Get<std::string>();
             fragmentShaderPath = gltfDirectory / gltfMaterialShaderFragment;
         }
@@ -250,23 +257,24 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
 
     std::ifstream vertexShaderFile(vertexShaderPath);
     if(vertexShaderFile.is_open()){
+        std::cout << "Test5\n";
         std::stringstream buffer;
         buffer << vertexShaderFile.rdbuf();
-
         vertexShaderSource = buffer.str();
     }
 
     std::ifstream fragmentShaderFile(fragmentShaderPath);
     if(fragmentShaderFile.is_open()){
+        std::cout << "Test6\n";
         std::stringstream buffer;
         buffer << fragmentShaderFile.rdbuf();
-
         fragmentShaderSource = buffer.str();
     }
 
     const char* vertexShaderSourceCStr = vertexShaderSource.c_str();
     const char* fragmentShaderSourceCStr = fragmentShaderSource.c_str();
-
+    std::cout << vertexShaderSource <<"\n";
+    std::cout << fragmentShaderSource <<"\n";
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSourceCStr, nullptr);
 
@@ -278,6 +286,7 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
     char buffer[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
     if(status == GL_FALSE){
+        std::cout << "Test5\n";
         GLint length;
         glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &length);
         glGetShaderInfoLog(vertexShader, length, &length, buffer);
@@ -286,6 +295,7 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
 
     glCompileShader(fragmentShader);
     if(status == GL_FALSE){
+        std::cout << "Test5\n";
         GLint length;
         glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &length);
         glGetShaderInfoLog(fragmentShader, length, &length, buffer);
@@ -299,11 +309,12 @@ void LoadMaterial(WindowContext windowContext, tinygltf::Model model, std::files
     glLinkProgram(windowContext.gl.program);
     glGetProgramiv(windowContext.gl.program, GL_LINK_STATUS, &status);
     if(status == GL_FALSE){
+        std::cout << "Test5\n";
         GLint length;
         glGetProgramiv(windowContext.gl.program, GL_INFO_LOG_LENGTH, &length);
         glGetProgramInfoLog(windowContext.gl.program, length, &length, buffer);
         std::cout << "Program Linking Failed" << buffer << std::endl;
     }
 
-    glUseProgram(0);
+   glUseProgram(0);
 }

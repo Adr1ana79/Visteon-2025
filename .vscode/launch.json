@@ -8,9 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Launch",
-            "program": "${workspaceFolder}/build/hello_world.exe",
+            "program": "${workspaceFolder}/hello-world/build/hello_world.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/build"
+            "cwd": "${workspaceFolder}/hello-world/build"
         }
     ]
 }
