@@ -59,7 +59,7 @@ int main(void){
     loadMaterial(windowContext, model, gltfDirectory, materialId);
 
     while (!glfwWindowShouldClose(window)){
-        glClearColor(0.5F, 0.0F, 0.7F, 1.0F);
+        glClearColor(0.8F, 0.0F, 0.6F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT);
          
         glBindVertexArray(windowContext.gl.vertexArrayObject);
@@ -153,24 +153,42 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
 }
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId){
+    const char* defaultVertexShaderSource = R"(
+        attribute vec2 position;
+        void main(){
+            gl_Position = vec4(position, 0.0, 1.0);
+        }
+    )";
+
+    const char* defaultFragmentShaderSource = R"(
+        void main(){
+            gl_Position = vec4(0.0, 1.0, 0.0, 1.0);
+        }
+    )";
 
     std::filesystem::path vertexShaderPath;
     std::filesystem::path fragmentShaderPath;
     std::string vertexShaderSource;
     std::string fragmentShaderSource;
 
-    auto gltfMaterialExstras = model.materials[materialId].extras;
-    if(gltfMaterialExstras.Has("shader")){
-        auto gltfMaterialShader = gltfMaterialExstras.Get("shader");
+    
+    if(materialId < model.materials.size()){
+        auto gltfMaterialExstras = model.materials[materialId].extras;
+        if(gltfMaterialExstras.Has("shader")){
+            auto gltfMaterialShader = gltfMaterialExstras.Get("shader");
 
-        if(gltfMaterialShader.Has("vertex")){
-            std::string gltfMaterialShaderVertex = gltfMaterialShader.Get("vertex").Get<std::string>();
-            vertexShaderPath = gltfDirectory / gltfMaterialShaderVertex;
+            if(gltfMaterialShader.Has("vertex")){
+                std::string gltfMaterialShaderVertex = gltfMaterialShader.Get("vertex").Get<std::string>();
+                vertexShaderPath = gltfDirectory / gltfMaterialShaderVertex;
+            }
+            if(gltfMaterialShader.Has("fragment")){
+                std::string gltfMaterialShaderFragment = gltfMaterialShader.Get("fragment").Get<std::string>();
+                fragmentShaderPath = gltfDirectory / gltfMaterialShaderFragment;
+            }
         }
-        if(gltfMaterialShader.Has("fragment")){
-            std::string gltfMaterialShaderFragment = gltfMaterialShader.Get("fragment").Get<std::string>();
-            fragmentShaderPath = gltfDirectory / gltfMaterialShaderFragment;
-        }
+    }else{
+        vertexShaderSource = defaultVertexShaderSource;
+        fragmentShaderSource = defaultFragmentShaderSource;
     }
 
     std::ifstream vertexShaderFile(vertexShaderPath);
