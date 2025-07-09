@@ -7,6 +7,7 @@
 struct WindowGLContext{
     GLuint vertexArrayObject;
     GLuint program;
+    GLuint indexBuffer;
 };
 
 struct WindowContext{
@@ -14,7 +15,6 @@ struct WindowContext{
 };
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId);
-
 void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int meshId);
 
 int main(void){
@@ -123,31 +123,31 @@ int main(void){
     // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);    
     // glEnableVertexAttribArray(POSITION_INDEX);  
     // glVertexAttribPointer(POSITION_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
-    int meshId = 0, materialId = 0;
-    loadMesh(windowContext, model, meshId);
-
+    
     std::filesystem::path gltfPath = gltfFilename;
     std::filesystem::path gltfDirectory = gltfPath.parent_path();
 
+    int meshId = 0, materialId = 0;
+    loadMesh(windowContext, model, meshId);
     loadMaterial(windowContext, model, gltfDirectory, materialId);
 
     while (!glfwWindowShouldClose(window)){
         glClearColor(0.5F, 0.0F, 0.7F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT);
+ 
+      //glDrawArrays(GL_TRIANGLES, 0, 3);
         
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
+        glBindVertexArray(windowContext.gl.vertexArrayObject);
         glUseProgram(windowContext.gl.program);
-       // glBindVertexArray(windowContext.gl.vertexArrayObject);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        //glBindVertexArray(vertexArrayObject2);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
+      // glDrawArrays(GL_TRIANGLES, 0, 3);
+ 
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
 
         glfwSwapBuffers(window);
 
         glfwPollEvents();
-     }
+    }
 
     glfwTerminate();
     return 0;
@@ -157,6 +157,7 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     GLuint vertexBuffer = 0;
     GLuint normalBuffer = 0;
     GLuint texCoordBuffer = 0;
+    GLuint indexBuffer = 0;
 
     uint32_t gltfAccessorPositionIndex = model.meshes[meshId].primitives[0].attributes["POSITION"];
     uint32_t gltfAccessorNormalIndex = model.meshes[meshId].primitives[0].attributes["NORMAL"];
@@ -182,17 +183,36 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     uint32_t gltfNormalByteLength = model.bufferViews[gltfBufferViewNormalIndex].byteLength;
     uint32_t gltfTexCoordByteLength = model.bufferViews[gltfBufferViewTexCoordIndex].byteLength;
     
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f, 
+        -0.5f, 0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f     
+    };
+
+    GLushort indeces[] = {
+        0, 1, 2,
+        1, 2, 3
+    };
+
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, gltfPositionByteLength, gltfBufferDataPosition + gltfPositionByteOffset, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &normalBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glBufferData(GL_ARRAY_BUFFER, gltfNormalByteLength, gltfBufferDataNormal + gltfNormalByteOffset, GL_STATIC_DRAW);
+    glGenBuffers(1, &indexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
+    windowContext.gl.indexBuffer = indexBuffer;
 
-    glGenBuffers(1, &texCoordBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
-    glBufferData(GL_ARRAY_BUFFER, gltfTexCoordByteLength, gltfBufferDataTexCoord + gltfTexCoordByteOffset, GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, gltfPositionByteLength, gltfBufferDataPosition + gltfPositionByteOffset, GL_STATIC_DRAW);
+
+    // glGenBuffers(1, &normalBuffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    // glBufferData(GL_ARRAY_BUFFER, gltfNormalByteLength, gltfBufferDataNormal + gltfNormalByteOffset, GL_STATIC_DRAW);
+
+    // glGenBuffers(1, &texCoordBuffer);
+    // glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
+    // glBufferData(GL_ARRAY_BUFFER, gltfTexCoordByteLength, gltfBufferDataTexCoord + gltfTexCoordByteOffset, GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &windowContext.gl.vertexArrayObject);
     glBindVertexArray(windowContext.gl.vertexArrayObject);
@@ -201,16 +221,17 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,0);
     
-    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0,0);
+    // glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0,0);
     
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,0);
+    // glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
+    // glEnableVertexAttribArray(0);
+    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,0);
 
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId){
