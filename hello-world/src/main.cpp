@@ -5,6 +5,7 @@
 #include "tiny_gltf.h"
 
 struct WindowGLContext{
+    GLuint indecesCount;
     GLuint vertexArrayObject;
     GLuint program;
     GLuint indexBuffer;
@@ -37,7 +38,7 @@ int main(void){
     
     glfwMakeContextCurrent(window); 
     
-    std::string gltfFilename = "../examples/gltf/03_shaders/export/shaders.gltf";
+    std::string gltfFilename = "../examples/gltf/04_suzanne/export/suzanne.gltf";
 
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -65,7 +66,7 @@ int main(void){
         glUseProgram(windowContext.gl.program);
  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
+        glDrawElements(GL_TRIANGLES, windowContext.gl.indecesCount, GL_UNSIGNED_SHORT, nullptr);
 
         glfwSwapBuffers(window);
 
@@ -85,57 +86,51 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     uint32_t gltfAccessorPositionIndex = model.meshes[meshId].primitives[0].attributes["POSITION"];
     uint32_t gltfAccessorNormalIndex = model.meshes[meshId].primitives[0].attributes["NORMAL"];
     uint32_t gltfAccessorTexCoordIndex = model.meshes[meshId].primitives[0].attributes["TEXCOORD_0"];
+    uint32_t gltfAccessorIndecesINdex = model.meshes[meshId].primitives[0].indices;
 
     uint32_t gltfBufferViewPositionIndex = model.accessors[gltfAccessorPositionIndex].bufferView;
     uint32_t gltfBufferViewNormalIndex = model.accessors[gltfAccessorNormalIndex].bufferView;
     uint32_t gltfBufferViewTexCoordIndex = model.accessors[gltfAccessorTexCoordIndex].bufferView;
+    uint32_t gltfBufferViewIndecesIndex = model.accessors[gltfAccessorIndecesINdex].bufferView;
 
     uint32_t gltfBufferIndexPosition = model.bufferViews[gltfBufferViewPositionIndex].buffer;
     uint32_t gltfBufferIndexNormal = model.bufferViews[gltfBufferViewNormalIndex].buffer;
     uint32_t gltfBufferIndexTexCoord = model.bufferViews[gltfBufferViewTexCoordIndex].buffer;
-
+    uint32_t gltfBufferIndexIndeces = model.bufferViews[gltfBufferViewIndecesIndex].buffer;
+    
     unsigned char* gltfBufferDataPosition = model.buffers[gltfBufferIndexPosition].data.data();
     unsigned char* gltfBufferDataNormal = model.buffers[gltfBufferIndexNormal].data.data();
     unsigned char* gltfBufferDataTexCoord = model.buffers[gltfBufferIndexTexCoord].data.data();
+    unsigned char* gltfBufferDataIndeces = model.buffers[gltfBufferIndexIndeces].data.data();
 
     uint32_t gltfPositionByteOffset = model.bufferViews[gltfBufferViewPositionIndex].byteOffset;
     uint32_t gltfNormalByteOffset = model.bufferViews[gltfBufferViewNormalIndex].byteOffset;
     uint32_t gltfTexCoordByteOffset = model.bufferViews[gltfBufferViewTexCoordIndex].byteOffset;
+    uint32_t gltfIndecesByteOffset = model.bufferViews[gltfBufferViewIndecesIndex].byteOffset;
 
     uint32_t gltfPositionByteLength = model.bufferViews[gltfBufferViewPositionIndex].byteLength;
     uint32_t gltfNormalByteLength = model.bufferViews[gltfBufferViewNormalIndex].byteLength;
     uint32_t gltfTexCoordByteLength = model.bufferViews[gltfBufferViewTexCoordIndex].byteLength;
-    
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f, 
-        -0.5f, 0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f     
-    };
+    uint32_t gltfIndecesByteLength = model.bufferViews[gltfBufferViewIndecesIndex].byteLength;
 
-    GLushort indeces[] = {
-        0, 1, 2,
-        1, 2, 3
-    };
+    windowContext.gl.indecesCount = gltfPositionByteLength / sizeof(GLushort);
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, gltfPositionByteLength, gltfBufferDataPosition + gltfPositionByteOffset, GL_STATIC_DRAW);
 
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces), indeces, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, gltfIndecesByteLength, gltfBufferDataIndeces + gltfIndecesByteOffset, GL_STATIC_DRAW);
     windowContext.gl.indexBuffer = indexBuffer;
 
-    // glBufferData(GL_ARRAY_BUFFER, gltfPositionByteLength, gltfBufferDataPosition + gltfPositionByteOffset, GL_STATIC_DRAW);
+    glGenBuffers(1, &normalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, gltfNormalByteLength, gltfBufferDataNormal + gltfNormalByteOffset, GL_STATIC_DRAW);
 
-    // glGenBuffers(1, &normalBuffer);
-    // glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    // glBufferData(GL_ARRAY_BUFFER, gltfNormalByteLength, gltfBufferDataNormal + gltfNormalByteOffset, GL_STATIC_DRAW);
-
-    // glGenBuffers(1, &texCoordBuffer);
-    // glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
-    // glBufferData(GL_ARRAY_BUFFER, gltfTexCoordByteLength, gltfBufferDataTexCoord + gltfTexCoordByteOffset, GL_STATIC_DRAW);
+    glGenBuffers(1, &texCoordBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
+    glBufferData(GL_ARRAY_BUFFER, gltfTexCoordByteLength, gltfBufferDataTexCoord + gltfTexCoordByteOffset, GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &windowContext.gl.vertexArrayObject);
     glBindVertexArray(windowContext.gl.vertexArrayObject);
@@ -144,13 +139,13 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,0);
     
-    // glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0,0);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0,0);
     
-    // glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,0);
+    glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0,0);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
