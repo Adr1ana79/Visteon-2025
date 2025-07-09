@@ -37,7 +37,6 @@ int main(void){
     
     glfwMakeContextCurrent(window); 
     
-//  std::string gltfFilename = "../examples/gltf/01_triangle/export/triangle.gltf";
     std::string gltfFilename = "../examples/gltf/03_shaders/export/shaders.gltf";
 
     tinygltf::Model model;
@@ -50,79 +49,6 @@ int main(void){
         std::cerr << "Warning: " << warn << std::endl;
         return 1;
     }
-
-    // GLfloat postitionData[] = {
-    //     -0.5f, -0.5f, 0.0f, // positions[0]​
-    //   0.5f, -0.5f, 0.0f, // positions[1]​
-    //     0.0f, 0.5f, 0.0f, // positions[2]​
-    // };
-
-    // GLfloat normalData[] = {
-    //     0.0f, 0.0f, 1.0f, // normals[0]​
-    //     0.0f, 0.0f, 1.0f, // normals[1]​
-    //     0.0f, 0.0f, 1.0f, // normals[2]​
-    // };
-
-    // GLfloat textData[] = {
-    //     0.25f, 0.25f, // texture coordinates[0]​
-    //     0.75f, 0.25f, // texture coordinates[1]​
-    //     0.5f, 0.75f // texture coordinates[2]​
-    // };
-
-    // unsigned int bufferID = 0;
-    // unsigned int buffer2ID = 0;
-    // unsigned int buffer3ID = 0;
-    
-    // glGenBuffers(1, &bufferID);
-    // glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(postitionData), postitionData, GL_STATIC_DRAW);
-
-    // glGenBuffers(1, &buffer2ID);
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID); 
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(normalData), normalData, GL_STATIC_DRAW);
-    
-    // glGenBuffers(1, &buffer3ID); 
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(textData), textData, GL_STATIC_DRAW);
-
-    // const int POSITION_INDEX = 0;
-    // const int NORMAL_INDEX = 1;
-    // const int TEXT_INDEX = 2;  
-    
-    // GLuint vertexArrayObject1 = 0;
-    // glGenVertexArrays(1, &vertexArrayObject1);
-    // glBindVertexArray(vertexArrayObject1);
-
-
-    // glBindBuffer(GL_ARRAY_BUFFER, bufferID); 
-    // glEnableVertexAttribArray(POSITION_INDEX);
-    // glVertexAttribPointer(POSITION_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);
-    // glEnableVertexAttribArray(NORMAL_INDEX);
-    // glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);
-    // glEnableVertexAttribArray(TEXT_INDEX);  
-    // glVertexAttribPointer(TEXT_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
-
-
-    // GLuint vertexArrayObject2 = 0;
-    // glGenVertexArrays(1, &vertexArrayObject2);
-    // glBindVertexArray(vertexArrayObject2);
-
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, bufferID);    
-    // glEnableVertexAttribArray(TEXT_INDEX);
-    // glVertexAttribPointer(TEXT_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0); 
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer2ID);    
-    // glEnableVertexAttribArray(NORMAL_INDEX);
-    // glVertexAttribPointer(NORMAL_INDEX, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    
-    // glBindBuffer(GL_ARRAY_BUFFER, buffer3ID);    
-    // glEnableVertexAttribArray(POSITION_INDEX);  
-    // glVertexAttribPointer(POSITION_INDEX, 2, GL_FLOAT, GL_FALSE,  0, 0);
     
     std::filesystem::path gltfPath = gltfFilename;
     std::filesystem::path gltfDirectory = gltfPath.parent_path();
@@ -134,12 +60,9 @@ int main(void){
     while (!glfwWindowShouldClose(window)){
         glClearColor(0.5F, 0.0F, 0.7F, 1.0F);
         glClear(GL_COLOR_BUFFER_BIT);
- 
-      //glDrawArrays(GL_TRIANGLES, 0, 3);
-        
+         
         glBindVertexArray(windowContext.gl.vertexArrayObject);
         glUseProgram(windowContext.gl.program);
-      // glDrawArrays(GL_TRIANGLES, 0, 3);
  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, nullptr);
@@ -235,24 +158,7 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
 }
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId){
-    /*const char* vertexShaderSource = R"(
-        #version 300 es
 
-        layout(location = 0) in vec3 position;
-        void main(){
-            gl_Position = vec4(position, 1.0);
-        }
-    )";
-
-    const char* fragmentShaderSource = R"(
-        #version 300 es
-
-        precision mediump float;
-        out vec4 fragColor;
-        void main(){
-            fragColor = vec4(0.0, 1.0, 0.7, 1.0);
-        }
-    )";*/
     std::filesystem::path vertexShaderPath;
     std::filesystem::path fragmentShaderPath;
     std::string vertexShaderSource;
