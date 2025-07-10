@@ -10,7 +10,10 @@ struct WindowGLContext{
     GLuint vertexArrayObject;
     GLuint program;
     GLuint indexBuffer;
+    std::unordered_map<std::string, int> materialUniformInts;
     std::unordered_map<std::string, float> materialUniformFloats;
+    std::unordered_map<std::string, Vector2> materialUniformVector2;
+    std::unordered_map<std::string, Vector3> materialUniformVector3;
     std::unordered_map<std::string, Vector4> materialUniformVector4;
 };
 
@@ -18,8 +21,10 @@ struct WindowContext{
     WindowGLContext gl;
 };
 
-
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, int value);
 static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, float value);
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector2 value);
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector3 value);
 static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector4 value);
 
 static void materialUpdateProperties(WindowGLContext& glContext);
@@ -170,10 +175,31 @@ void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int 
     glBindVertexArray(0);
 }
 
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, int value){
+    if (glContext.materialUniformInts.find(uniformName) != glContext.materialUniformInts.end())
+    {
+        glContext.materialUniformInts[uniformName] = value;
+    }
+}
+
 static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, float value){
     if (glContext.materialUniformFloats.find(uniformName) != glContext.materialUniformFloats.end())
     {
         glContext.materialUniformFloats[uniformName] = value;
+    }
+}
+
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector2 value){
+    if (glContext.materialUniformVector2.find(uniformName) != glContext.materialUniformVector2.end())
+    {
+        glContext.materialUniformVector2[uniformName] = value;
+    }
+}
+
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector3 value){
+    if (glContext.materialUniformVector3.find(uniformName) != glContext.materialUniformVector3.end())
+    {
+        glContext.materialUniformVector3[uniformName] = value;
     }
 }
 
@@ -246,10 +272,29 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
                     if (uniform.Has("type")){
                         std::string type = uniform.Get("type").Get<std::string>();
                         auto uniformValue = uniform.Get("value");
+                        
+                        if(type == "Int"){
+                            int uniformValueInt = uniformValue.Get(0).Get<int>();
+                            windowContext.gl.materialUniformInts[uniformName] = uniformValueInt;
+                            std::cout << "Uniform: " << uniformName << " = " << uniformValueInt << std::endl; 
+                        }
                         if(type == "Float"){
                             double uniformValueFloat = uniformValue.Get(0).Get<double>();
                             windowContext.gl.materialUniformFloats[uniformName] = uniformValueFloat;
                             std::cout << "Uniform: " << uniformName << " = " << uniformValueFloat << std::endl; 
+                        }
+                        if(type == "Vector2"){
+                            double x = uniformValue.Get(0).Get<double>();
+                            double y = uniformValue.Get(1).Get<double>();
+                            windowContext.gl.materialUniformVector2[uniformName] = Vector2(x,y);
+                            std::cout << "Uniform: " << uniformName << " = " << x << ", " << y << std::endl; 
+                        }
+                        if(type == "Vector3"){
+                            double x = uniformValue.Get(0).Get<double>();
+                            double y = uniformValue.Get(1).Get<double>();
+                            double z = uniformValue.Get(2).Get<double>();
+                            windowContext.gl.materialUniformVector3[uniformName] = Vector3(x,y,z);
+                            std::cout << "Uniform: " << uniformName << " = " << x << ", " << y << ", " << z << std::endl; 
                         }
                         if(type == "Vector4"){
                             double x = uniformValue.Get(0).Get<double>();
