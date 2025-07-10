@@ -58,7 +58,7 @@ int main(void){
     
     glfwMakeContextCurrent(window); 
     
-    std::string gltfFilename = "../examples/gltf/05_suzanne_uniforms/export/suzanne.gltf";
+    std::string gltfFilename = "../examples/gltf/06_shadertoy/export/shadertoy.gltf";
 
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -87,7 +87,7 @@ int main(void){
  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
 
-        materialSetProperty(windowContext.gl, "time", getCurrentTime());
+        materialSetProperty(windowContext.gl, "iTime", getCurrentTime());
         materialUpdateProperties(windowContext.gl);
 
         glDrawElements(GL_TRIANGLES, windowContext.gl.indecesCount, GL_UNSIGNED_SHORT, nullptr);
@@ -211,12 +211,36 @@ static void materialSetProperty(WindowGLContext& glContext, std::string uniformN
 }
 
 static void materialUpdateProperties(WindowGLContext& glContext){
+    for (auto& uniform : glContext.materialUniformInts){
+        GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
+        if (location != -1){
+            glUniform1i(location, uniform.second);
+        }
+        std::cout << "Uniform: " << uniform.first << " = " << uniform.second << std::endl;
+    }
+
     for (auto& uniform : glContext.materialUniformFloats){
         GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
         if (location != -1){
             glUniform1f(location, uniform.second);
         }
         std::cout << "Uniform: " << uniform.first << " = " << uniform.second << std::endl;
+    }
+
+    for (auto& uniform : glContext.materialUniformVector2){
+        GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
+        if (location != -1){
+            glUniform2f(location, uniform.second.x, uniform.second.y);
+        }
+        std::cout << "Uniform: " << uniform.first << " = " << uniform.second.x << ", " << uniform.second.y << std::endl;
+    }
+
+    for (auto& uniform : glContext.materialUniformVector3){
+        GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
+        if (location != -1){
+            glUniform3f(location, uniform.second.x, uniform.second.y, uniform.second.z);
+        }
+        std::cout << "Uniform: " << uniform.first << " = " << uniform.second.x << ", " << uniform.second.y << ", "<< uniform.second.z << std::endl;
     }
 
     for (auto& uniform : glContext.materialUniformVector4){
@@ -272,7 +296,7 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
                     if (uniform.Has("type")){
                         std::string type = uniform.Get("type").Get<std::string>();
                         auto uniformValue = uniform.Get("value");
-                        
+
                         if(type == "Int"){
                             int uniformValueInt = uniformValue.Get(0).Get<int>();
                             windowContext.gl.materialUniformInts[uniformName] = uniformValueInt;
