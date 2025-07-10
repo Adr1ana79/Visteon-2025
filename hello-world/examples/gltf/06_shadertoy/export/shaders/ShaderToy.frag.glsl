@@ -35,7 +35,7 @@ void main()
 
 // ================== Put your shadertoy code here ==================
 
-// https://www.shadertoy.com/new
+// https://www.shadertoy.com/view/Xtf3zn
 #define BUMPMAP
 #define MARCHSTEPS 128
 #define MARCHSTEPSREFLECTION 48
