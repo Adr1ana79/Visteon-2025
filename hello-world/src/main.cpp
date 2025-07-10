@@ -3,6 +3,7 @@
 #include <GLES3/gl3.h>
 
 #include "tiny_gltf.h"
+#include "basic_types.hpp"
 
 struct WindowGLContext{
     GLuint indecesCount;
@@ -10,6 +11,7 @@ struct WindowGLContext{
     GLuint program;
     GLuint indexBuffer;
     std::unordered_map<std::string, float> materialUniformFloats;
+    std::unordered_map<std::string, Vector4> materialUniformVector4;
 };
 
 struct WindowContext{
@@ -17,8 +19,16 @@ struct WindowContext{
 };
 
 
-static void materialSetProperty(WindowContext& windowContext, std::string uniformName, float value);
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, float value);
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector4 value);
+
 static void materialUpdateProperties(WindowGLContext& glContext);
+
+static float getCurrentTime(){
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime.time_since_epoch()).count();
+    return duration / 1000.0f;
+}
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId);
 void loadMesh(WindowContext& windowContext, tinygltf::Model model, unsigned int meshId);
@@ -71,6 +81,10 @@ int main(void){
         glUseProgram(windowContext.gl.program);
  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
+
+        materialSetProperty(windowContext.gl, "iTime", getCurrentTime());
+        materialUpdateProperties(windowContext.gl);
+
         glDrawElements(GL_TRIANGLES, windowContext.gl.indecesCount, GL_UNSIGNED_SHORT, nullptr);
 
         glfwSwapBuffers(window);
@@ -163,6 +177,13 @@ static void materialSetProperty(WindowGLContext& glContext, std::string uniformN
     }
 }
 
+static void materialSetProperty(WindowGLContext& glContext, std::string uniformName, Vector4 value){
+    if (glContext.materialUniformVector4.find(uniformName) != glContext.materialUniformVector4.end())
+    {
+        glContext.materialUniformVector4[uniformName] = value;
+    }
+}
+
 static void materialUpdateProperties(WindowGLContext& glContext){
     for (auto& uniform : glContext.materialUniformFloats){
         GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
@@ -188,7 +209,7 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
         }
     )";
     
-    std::filesystem::path vertexShaderPath;
+    std::filesystem::path vertexShaderPath; 
     std::filesystem::path fragmentShaderPath;
     std::string vertexShaderSource;
     std::string fragmentShaderSource;
