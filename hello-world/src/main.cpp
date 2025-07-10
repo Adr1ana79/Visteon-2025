@@ -82,7 +82,7 @@ int main(void){
  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, windowContext.gl.indexBuffer);
 
-        materialSetProperty(windowContext.gl, "iTime", getCurrentTime());
+        materialSetProperty(windowContext.gl, "time", getCurrentTime());
         materialUpdateProperties(windowContext.gl);
 
         glDrawElements(GL_TRIANGLES, windowContext.gl.indecesCount, GL_UNSIGNED_SHORT, nullptr);
@@ -192,6 +192,14 @@ static void materialUpdateProperties(WindowGLContext& glContext){
         }
         std::cout << "Uniform: " << uniform.first << " = " << uniform.second << std::endl;
     }
+
+    for (auto& uniform : glContext.materialUniformVector4){
+        GLint location = glGetUniformLocation(glContext.program, uniform.first.c_str());
+        if (location != -1){
+            glUniform4f(location, uniform.second.x, uniform.second.y, uniform.second.z, uniform.second.w);
+        }
+        std::cout << "Uniform: " << uniform.first << " = " << uniform.second.x << ", " << uniform.second.y << ", "<< uniform.second.z << ", " << uniform.second.w << std::endl;
+    }
 }
 
 void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::filesystem::path gltfDirectory, unsigned int materialId)
@@ -244,8 +252,12 @@ void loadMaterial(WindowContext& windowContext, tinygltf::Model model, std::file
                             std::cout << "Uniform: " << uniformName << " = " << uniformValueFloat << std::endl; 
                         }
                         if(type == "Vector4"){
-                            double uniformValueFloat = uniformValue.Get(0).Get<double>();
-                            std::cout << "Uniform: " << uniformName << " = " << uniformValueFloat << std::endl; 
+                            double x = uniformValue.Get(0).Get<double>();
+                            double y = uniformValue.Get(1).Get<double>();
+                            double z = uniformValue.Get(2).Get<double>();
+                            double w = uniformValue.Get(3).Get<double>();
+                            windowContext.gl.materialUniformVector4[uniformName] = Vector4(x,y,z,w);
+                            std::cout << "Uniform: " << uniformName << " = " << x << ", " << y << ", " << z << ", " << w << std::endl; 
                         }
                     }
                 }
